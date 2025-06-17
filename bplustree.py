@@ -1,6 +1,8 @@
 # Some important considerations about B+ Trees:
-# Leaf nodes store data and are linked together through a doubly-linked list;
 # Internal nodes only store keys to guide the search;
+# Only the leaf nodes store data and are also linked together through a linked list (in this project, it was implemented using a doubly-linked list);
+# All leaf nodes must be at the same level, ensuring that the B+ Tree is always balanced;
+# The order specifies the maximum number of children a node can have;
 # A leaf node in a B+ Tree of order (m) can hold a maximum of (m - 1) keys.
 
 class LeafNode:
