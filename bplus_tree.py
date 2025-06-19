@@ -16,8 +16,8 @@ class LeafNode:
     def __init__(self, m):
         self.keys = []
         self.values = []
-        self.next_leaf = None  # Pointers to the next leaf in the linked list
-        self.prev_leaf = None  # Pointers to the previous leaf in the linked list
+        self.next_leaf = None  # Pointers to the next leaf
+        self.prev_leaf = None  # Pointers to the previous
         self.parent = None  # Pointers to the parent node, useful for rebalancing
         self.m = m
 
@@ -117,3 +117,112 @@ class BPlusTree:
 
         # If key not found
         return None
+
+    def insert(self, key, value):
+        """
+        Handle insertions of a key-value pair into the B+ tree.
+        """
+        # Step 1 - find which leaf to insert
+        leaf = self.search(key)
+
+        # Step 2 - insert in the leaf, keeping the order
+        self.insert_at_leaf(leaf, key, value)
+
+        # Step 3 - check if split is necessary (overflow)
+        if len(leaf.keys) == self.m:
+
+            new_leaf = LeafNode(self.m)
+
+            mid = len(leaf.keys) // 2  # Calculate split point
+
+            # Move half the keys/values to new leaf
+            new_leaf.keys = leaf.keys[mid:]
+            new_leaf.values = leaf.values[mid:]
+            new_leaf.parent = leaf.parent
+
+            # Update original leaf
+            leaf.keys = leaf.keys[:mid]
+            leaf.values = leaf.values[:mid]
+
+            # Update leaf links
+            new_leaf.next_leaf = leaf.next_leaf
+            new_leaf.prev_leaf = leaf
+            if leaf.next_leaf:
+                leaf.next_leaf.prev_leaf = new_leaf
+            leaf.next_leaf = new_leaf
+
+            # Insert in parent
+            self.insert_in_parent(leaf, new_leaf.keys[0], new_leaf)
+
+    def insert_at_leaf(self, leaf, key, value):
+        """
+        Inserts a key-value pair into leaf node keeping the order.
+        """
+        if leaf.keys:  # Non-empty leaf
+            for i in range(len(leaf.keys)):
+                if key == leaf.keys[i]:
+                    leaf.values[i] = value  # Overwrite existing value
+                    return
+                elif key < leaf.keys[i]:
+                    leaf.keys.insert(i, key)  # Insert the key in the correct position
+                    leaf.values.insert(
+                        i, value
+                    )  # Insert the value in the correct position
+                    return
+
+            # If the key is greater than the others, append it
+            leaf.keys.append(key)
+            leaf.values.append(value)
+
+        else:  # Empty leaf
+            leaf.keys = [key]
+            leaf.values = [value]
+
+    def insert_in_parent(self, original_node, key, new_right_node):
+        """
+        Handles both leaf and internal node splits.
+        """
+        # Case 1: original_node is root
+        if original_node.parent is None:
+            new_root = InternalNode(self.m)
+            new_root.keys = [key]
+            new_root.children = [original_node, new_right_node]
+            self.root = new_root
+            original_node.parent = new_root
+            new_right_node.parent = new_root
+            return
+
+        # Case 2: Insert into parent
+        parent = original_node.parent
+        new_right_node.parent = parent
+
+        # Find position and insert
+        for i in range(len(parent.children)):
+            if parent.children[i] == original_node:
+                parent.keys.insert(i, key)
+                parent.children.insert(i + 1, new_right_node)
+                break
+
+        # Case 3: Parent overflow
+        if len(parent.keys) == self.m:
+
+            new_parent = InternalNode(self.m)
+            new_parent.parent = parent.parent
+
+            mid = len(parent.keys) // 2  # Split point
+            promoted_key = parent.keys[mid]
+
+            # Move keys and children
+            new_parent.keys = parent.keys[mid + 1 :]
+            new_parent.children = parent.children[mid + 1 :]
+
+            # Update original parent
+            parent.keys = parent.keys[:mid]
+            parent.children = parent.children[: mid + 1]
+
+            # Update children's parent pointers
+            for child in new_parent.children:
+                child.parent = new_parent
+
+            # Recursive call to handle parent split
+            self.insert_in_parent(parent, promoted_key, new_parent)
