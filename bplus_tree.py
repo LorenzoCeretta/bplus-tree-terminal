@@ -18,7 +18,7 @@ class LeafNode:
         self.values = []
         self.next_leaf = None  # Pointers to the next leaf in the linked list
         self.prev_leaf = None  # Pointers to the previous leaf in the linked list
-        self.parent = None
+        self.parent = None  # Pointers to the parent node, useful for rebalancing
         self.m = m
 
     def is_full(self):
@@ -69,11 +69,39 @@ class BPlusTree:
         return f"BPlusTree(order={self.m}, root={self.root})"
 
     def search(self, key):
-        """ """
+        """
+        Traverses down from the root through internal nodes using key comparisons
+        to guide the path, then searches within the target leaf node for the key.
+        """
 
         current_node = self.root
 
+        # Navigate in a transversal way trough nodes until reach a leaf
         while isinstance(
             current_node, InternalNode
         ):  # isinstance is a python function to check if an object is from a specified class or a subclass from it
-            pass
+
+            node_keys = current_node.keys
+            child_index = 0
+
+            # Find the correct child to follow
+            for i in range(len(node_keys)):
+                if key < node_keys[i]:
+                    child_index = i
+                    break
+                else:
+                    child_index = i + 1
+
+            # Move to the correct child
+            current_node = current_node.children[child_index]
+
+        if isinstance(
+            current_node, LeafNode
+        ):  # Now at the leaf layer, search for the appropriate key
+            for i in range(len(current_node.keys)):
+                if current_node.keys[i] == key:
+                    return current_node.values[i]
+
+        # If key not found
+        print(f"Key {key} not found in search")
+        return None
