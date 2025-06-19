@@ -52,10 +52,19 @@ class InternalNode:
 
 class BPlusTree:
     """
-    B+ tree data structure optimized for database and file system applications.
-    Provides efficient insertion, deletion, and range query operations.
+    B+ tree class to manage all the operations.
     """
 
     def __init__(self, m):
         self.m = m
         self.root = LeafNode(m)
+
+    def search(self, key):
+        """ """
+
+        current_node = self.root
+
+        while isinstance(
+            current_node, InternalNode
+        ):  # isinstance is a python function to check if an object is from a specified class or a subclass from it
+            pass
