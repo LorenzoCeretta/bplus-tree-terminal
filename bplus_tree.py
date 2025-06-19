@@ -46,7 +46,7 @@ class InternalNode:
         self.m = m
 
     def is_full(self):
-        # A leaf node is full if it has (m - 1) keys
+        # An internal node is full if it has (m - 1) keys
         return len(self.keys) == self.m - 1
 
     def is_empty(self):
@@ -70,13 +70,20 @@ class BPlusTree:
 
     def search(self, key):
         """
-        Traverses down from the root through internal nodes using key comparisons
-        to guide the path, then searches within the target leaf node for the key.
-        """
+        Navigates down from the root through internal nodes to find the leaf node
+        where the key is located or should be inserted.
 
+        Returns:
+            LeafNode: The leaf node that either:
+                     - Contains the key (if key exists)
+                     - Should contain the key (if key doesn't exist) -useful for insertion
+
+        Note:
+            Use search_value() to check if a key actually exists in the tree.
+        """
         current_node = self.root
 
-        # Navigate in a transversal way trough nodes until reach a leaf
+        # Navigate trough nodes until reach a leaf
         while isinstance(
             current_node, InternalNode
         ):  # isinstance is a python function to check if an object is from a specified class or a subclass from it
@@ -95,13 +102,18 @@ class BPlusTree:
             # Move to the correct child
             current_node = current_node.children[child_index]
 
-        if isinstance(
-            current_node, LeafNode
-        ):  # Now at the leaf layer, search for the appropriate key
-            for i in range(len(current_node.keys)):
-                if current_node.keys[i] == key:
-                    return current_node.values[i]
+        return current_node
+
+    def search_value(self, key):
+        """
+        Search for a specific value using the search() function to find the proper leaf node.
+        """
+        leaf = self.search(key)
+
+        # Search the value inside the leaf node
+        for i in range(len(leaf.keys)):
+            if leaf.keys[i] == key:
+                return leaf.values[i]
 
         # If key not found
-        print(f"Key {key} not found in search")
         return None
