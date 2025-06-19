@@ -28,6 +28,9 @@ class LeafNode:
     def is_empty(self):
         return len(self.keys) == 0
 
+    def __str__(self):
+        return f"LeafNode(keys={self.keys}, values={self.values})"
+
 
 class InternalNode:
     """
@@ -49,6 +52,9 @@ class InternalNode:
     def is_empty(self):
         return len(self.keys) == 0
 
+    def __str__(self):
+        return f"InternalNode(keys={self.keys}, children_count={len(self.children)})"
+
 
 class BPlusTree:
     """
@@ -58,6 +64,9 @@ class BPlusTree:
     def __init__(self, m):
         self.m = m
         self.root = LeafNode(m)
+
+    def __str__(self):
+        return f"BPlusTree(order={self.m}, root={self.root})"
 
     def search(self, key):
         """ """
