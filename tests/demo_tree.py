@@ -53,9 +53,16 @@ print("Leaf --> ", leaf1)
 print("Leaf --> ", leaf2)
 print("Leaf --> ", leaf3)
 
-print("\n--- Testing Search ---")
-print(f"Search (15): {tree.search(15)}")  # Should return Ben
-print(f"Search (2): {tree.search(2)}")  # Should return Leo
-print(f"Search (30): {tree.search(30)}")  # Should return Denzel
-print(f"Search (5): {tree.search(5)}")  # Should return None
-print(f"Search (25): {tree.search(25)}")  # Should return None
+print("\n--- Testing Search Value ---")
+print(f"Search (15): {tree.search_value(15)}")  # Should return Ben
+print(f"Search (2): {tree.search_value(2)}")  # Should return Leo
+print(f"Search (30): {tree.search_value(30)}")  # Should return Denzel
+print(f"Search (5): {tree.search_value(5)}")  # Should return None
+print(f"Search (25): {tree.search_value(25)}")  # Should return None
+
+print("\n--- Testing Search Leafs ---")
+print(f"Search (15): {tree.search(15)}")
+print(f"Search (2): {tree.search(2)}")
+print(f"Search (30): {tree.search(30)}")
+print(f"Search (5): {tree.search(5)}")  # Should return the insertion correct place
+print(f"Search (25): {tree.search(25)}")  # Should return the insertion correct place
