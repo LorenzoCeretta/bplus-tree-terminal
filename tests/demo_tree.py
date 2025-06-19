@@ -1,6 +1,6 @@
 from bplus_tree import BPlusTree, LeafNode, InternalNode
 
-# Implementing the B+ Tree without the insertion method, to build the search method first
+# Implementing a B+ Tree without the insertion method, to test the classes and the search
 
 # Bulding the following B+ Tree, of order m = 3:
 
@@ -46,8 +46,16 @@ leaf3.parent = root
 tree = BPlusTree(m)
 tree.root = root
 
+print("--- Testing Tree ---")
 print("Tree --> ", tree)
 print("Root --> ", root)
 print("Leaf --> ", leaf1)
 print("Leaf --> ", leaf2)
 print("Leaf --> ", leaf3)
+
+print("\n--- Testing Search ---")
+print(f"Search (15): {tree.search(15)}")  # Should return Ben
+print(f"Search (2): {tree.search(2)}")  # Should return Leo
+print(f"Search (30): {tree.search(30)}")  # Should return Denzel
+print(f"Search (5): {tree.search(5)}")  # Should return None
+print(f"Search (25): {tree.search(25)}")  # Should return None
