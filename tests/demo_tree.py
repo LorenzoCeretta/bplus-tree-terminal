@@ -46,4 +46,8 @@ leaf3.parent = root
 tree = BPlusTree(m)
 tree.root = root
 
-print(tree)
+print("Tree --> ", tree)
+print("Root --> ", root)
+print("Leaf --> ", leaf1)
+print("Leaf --> ", leaf2)
+print("Leaf --> ", leaf3)
