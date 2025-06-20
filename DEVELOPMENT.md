@@ -50,20 +50,19 @@ The implementation has three main classes:
 - Add tests for edge cases
 - Make sure everything works as expected
 
-### 3: File System Implementation
+## 4. File System
 
 - Create a script that applies the B+ tree structure to manage a file system
 - Build an interactive Python terminal interface that allows users to:
   - Navigate through directories
   - Create, update, and delete files and directories
 
-### 4: Performance Analysis
+## 5. Performance Analysis
 
-- Design and run comprehensive benchmarks to measure:
-  - Operations performance and speeds
+- Design and run comprehensive benchmarks to measure operations performance and speeds
 - Create visual representations of the results using graphs
 - Compare performance with different tree orders and data sizes
 
-### 5: Extras
+## 6. Extras
 
 - Build a visual interface to demonstrate terminal interaction and commands
