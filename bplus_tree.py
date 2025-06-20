@@ -68,6 +68,29 @@ class BPlusTree:
     def __str__(self):
         return f"BPlusTree(order={self.m}, root={self.root})"
 
+    def visualization(tree):
+        """
+        Function made by AI to help with the tree visualization
+        """
+
+        def _fmt(keys):
+            return ",".join(map(str, keys))
+
+        def _walk(node, depth=0) -> str:
+            indent = "  " * depth
+            if isinstance(node, LeafNode):
+                return f"{indent}[{_fmt(node.keys)}]\n"
+            else:
+                out = f"{indent}<{_fmt(node.keys)}>\n"
+                for child in node.children:
+                    out += _walk(child, depth + 1)
+                return out
+
+        if tree.root is None:
+            print("<empty>")
+        else:
+            print(_walk(tree.root), end="")
+
     def search(self, key):
         """
         Navigates down from the root through internal nodes to find the leaf node
@@ -76,7 +99,7 @@ class BPlusTree:
         Returns:
             LeafNode: The leaf node that either:
                      - Contains the key (if key exists)
-                     - Should contain the key (if key doesn't exist) -useful for insertion
+                     - Should contain the key (if key doesn't exist) - useful for insertion
 
         Note:
             Use search_value() to check if a key actually exists in the tree.
