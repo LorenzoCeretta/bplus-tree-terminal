@@ -403,3 +403,49 @@ class BPlusTree:
 
         parent.keys.pop(sep_idx)
         parent.children.pop(sep_idx + 1)
+
+    # ----- Utilities -----
+
+    def range_query(self, start, end):
+        """
+        Return all key-value pairs in the range [start, end]
+        """
+        result = []
+
+        current_leaf = self.search(start)  # Find the starting leaf
+
+        # Navigate through the doubly linked list and store the keys in range
+        while current_leaf:
+            for key, value in zip(current_leaf.keys, current_leaf.values):
+                if key > end:
+                    return result  # Early termination when pass the end
+
+                # Add key to results if it's >= start
+                if key >= start:
+                    result.append((key, value))
+
+            current_leaf = current_leaf.next_leaf
+
+        return result
+
+    def get_all_leaf_keys(self):
+        """
+        Return all keys in the tree in sorted order.
+        Uses the doubly-linked leaf structure for it.
+        """
+        keys = []
+
+        # Find the first leaf
+        current_leaf = self.root
+        while isinstance(current_leaf, InternalNode):
+            current_leaf = current_leaf.children[0]  # Always selects the leftmost child
+
+        # Traverse all leaves using the linked list
+        while current_leaf:
+            for k in current_leaf.keys:
+                keys.append(k)
+            current_leaf = (
+                current_leaf.next_leaf
+            )  # Move to next leaf after processing all keys
+
+        return keys
