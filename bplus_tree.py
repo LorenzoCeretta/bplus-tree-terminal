@@ -68,28 +68,7 @@ class BPlusTree:
     def __str__(self):
         return f"BPlusTree(order={self.m}, root={self.root})"
 
-    def visualization(tree):
-        """
-        Function made by AI to help with the tree visualization
-        """
-
-        def _fmt(keys):
-            return ",".join(map(str, keys))
-
-        def _walk(node, depth=0) -> str:
-            indent = "  " * depth
-            if isinstance(node, LeafNode):
-                return f"{indent}[{_fmt(node.keys)}]\n"
-            else:
-                out = f"{indent}<{_fmt(node.keys)}>\n"
-                for child in node.children:
-                    out += _walk(child, depth + 1)
-                return out
-
-        if tree.root is None:
-            print("<empty>")
-        else:
-            print(_walk(tree.root), end="")
+    # ----- Search Method and Search Helpers -----
 
     def search(self, key):
         """
@@ -140,6 +119,31 @@ class BPlusTree:
 
         # If key not found
         return None
+
+    def visualization(self):
+        """
+        Function made by AI to help with the tree visualization
+        """
+
+        def _fmt(keys):
+            return ",".join(map(str, keys))
+
+        def _walk(node, depth=0) -> str:
+            indent = "  " * depth
+            if isinstance(node, LeafNode):
+                return f"{indent}[{_fmt(node.keys)}]\n"
+            else:
+                out = f"{indent}<{_fmt(node.keys)}>\n"
+                for child in node.children:
+                    out += _walk(child, depth + 1)
+                return out
+
+        if self.root is None:
+            print("<empty>")
+        else:
+            print(_walk(self.root), end="")
+
+    # ----- Insert Method and Insert Helpers -----
 
     def insert(self, key, value):
         """
@@ -249,3 +253,153 @@ class BPlusTree:
 
             # Recursive call to handle parent split
             self.insert_in_parent(parent, promoted_key, new_parent)
+
+    # ----- Delete Method and Delete Helpers -----
+
+    def delete(self, key):
+        """
+        Removes the given key and its value from the B+-Tree.
+        If the key is not present returns None
+        """
+        leaf = self.search(key)
+        if key not in leaf.keys:
+            return None
+
+        idx = leaf.keys.index(key)
+        leaf.keys.pop(idx)
+        leaf.values.pop(idx)
+
+        if leaf is self.root:  # If root is a leaf node, process finished
+            return
+
+        # If the leaf still holds enough keys, only need to fix the separator
+        if len(leaf.keys) >= self.minimum_leaf_keys():
+            self.fix_parent_key(leaf)
+            return
+
+        # Otherwise start the rebalancing process
+        self.delete_entry(leaf)
+
+    # Minimum key helpers
+    def minimum_leaf_keys(self):
+        """(m-1)/2) -> least number of keys a leaf may hold after deletion"""
+        return self.m // 2
+
+    def minimum_internal_keys(self):
+        """((m/2) − 1) –> least number of keys an internal node may hold"""
+        return (self.m - 1) // 2
+
+    def minimum_keys(self, node):
+        """Return the allowed minimum for the given node type"""
+        return (
+            self.minimum_leaf_keys()
+            if isinstance(node, LeafNode)
+            else self.minimum_internal_keys()
+        )
+
+    # Rebalancing
+    def delete_entry(self, node):
+        parent = node.parent
+
+        # Case 1 – node is root
+        if parent is None:
+            if isinstance(node, InternalNode) and len(node.children) == 1:
+                self.root = node.children[0]
+                self.root.parent = None
+            return
+
+        # Identify siblings and separator index
+        pos = parent.children.index(node)
+        left = parent.children[pos - 1] if pos > 0 else None
+        right = parent.children[pos + 1] if pos < len(parent.children) - 1 else None
+
+        # 1) Borrow from left
+        if left and len(left.keys) > self.minimum_keys(left):
+            self.borrow_from_left(node, left, parent, pos - 1)
+            return
+
+        # 2) Borrow from right
+        if right and len(right.keys) > self.minimum_keys(right):
+            self.borrow_from_right(node, right, parent, pos)
+            return
+
+        # 3) Merge with a sibling
+        if left:
+            self.merge_nodes(left, node, parent, pos - 1)
+            affected_parent = parent
+        else:
+            self.merge_nodes(node, right, parent, pos)
+            affected_parent = parent
+
+        # Parent may now be deficient
+        if affected_parent is self.root and len(affected_parent.keys) == 0:
+            self.root = affected_parent.children[0]
+            self.root.parent = None
+        elif len(affected_parent.keys) < self.minimum_internal_keys():
+            self.delete_entry(affected_parent)
+
+    # Rebalancing Utilities
+    def fix_parent_key(self, node):
+        """Update parent separator when the first key in a leaf changes."""
+        parent = node.parent
+        if not parent or not node.keys:
+            return
+
+        # Find position of this node in parent's children
+        pos = parent.children.index(node)
+
+        # If this is not the leftmost child, update the separator key
+        if pos > 0:
+            parent.keys[pos - 1] = node.keys[0]
+            # Recursively fix parent if it's also not the leftmost
+            self.fix_parent_key(parent)
+
+    def borrow_from_left(self, node, left, parent, sep_idx):
+        """Move one key from the left sibling to node (with parent update)"""
+        if isinstance(node, LeafNode):
+            node.keys.insert(0, left.keys.pop(-1))
+            node.values.insert(0, left.values.pop(-1))
+            parent.keys[sep_idx] = node.keys[0]
+        else:
+            sep_key = parent.keys[sep_idx]
+            child = left.children.pop(-1)
+            node.children.insert(0, child)
+            child.parent = node
+            node.keys.insert(0, sep_key)
+            parent.keys[sep_idx] = left.keys.pop(-1)
+
+    def borrow_from_right(self, node, right, parent, sep_idx):
+        """Move one key from the right sibling to node (with parent update)"""
+        if isinstance(node, LeafNode):
+            node.keys.append(right.keys.pop(0))
+            node.values.append(right.values.pop(0))
+            parent.keys[sep_idx] = right.keys[0]
+        else:
+            sep_key = parent.keys[sep_idx]
+            child = right.children.pop(0)
+            node.children.append(child)
+            child.parent = node
+            node.keys.append(sep_key)
+            parent.keys[sep_idx] = right.keys.pop(0)
+
+    def merge_nodes(self, left, right, parent, sep_idx):
+        """
+        Merge two siblings and remove the separator from the parent.
+        After the call only the left node survives.
+        """
+        if isinstance(left, LeafNode):
+            left.keys.extend(right.keys)
+            left.values.extend(right.values)
+            left.next_leaf = right.next_leaf
+            if right.next_leaf:
+                right.next_leaf.prev_leaf = left
+        else:
+            separator = parent.keys[sep_idx]  # separator - key between the siblings
+            left.keys.append(separator)  # bring separator down into left node
+            left.keys.extend(right.keys)
+            for child in right.children:
+                child.parent = left
+            left.children.extend(right.children)
+
+        parent.keys.pop(sep_idx)
+        parent.children.pop(sep_idx + 1)
