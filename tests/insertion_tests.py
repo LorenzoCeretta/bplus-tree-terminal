@@ -1,5 +1,7 @@
 from bplus_tree import BPlusTree
 
+# To test it, run python3 -m tests.insertion_tests
+
 # Second Test - Testing the insertion methods
 
 # 1) Simple insertions

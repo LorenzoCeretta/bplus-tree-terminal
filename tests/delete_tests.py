@@ -1,5 +1,7 @@
 from bplus_tree import BPlusTree
 
+# To test it, run python3 -m tests.delete_tests
+
 # Third Test - Testing the delete methods
 
 # 0) Set-up

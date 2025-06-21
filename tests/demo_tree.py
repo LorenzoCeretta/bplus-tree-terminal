@@ -1,5 +1,7 @@
 from bplus_tree import BPlusTree, LeafNode, InternalNode
 
+# To test it, run python3 -m tests.demo_tree
+
 # First Test
 
 # Implementing a B+ Tree without the insertion method, to test the classes and the search
@@ -62,7 +64,7 @@ print(f"Search (30): {tree.search_value(30)}")  # Should return Denzel
 print(f"Search (5): {tree.search_value(5)}")  # Should return None
 print(f"Search (25): {tree.search_value(25)}")  # Should return None
 
-print("\n--- Testing Search Leafs ---")
+print("\n--- Testing Search Leaves ---")
 print(f"Search (15): {tree.search(15)}")
 print(f"Search (2): {tree.search(2)}")
 print(f"Search (30): {tree.search(30)}")
