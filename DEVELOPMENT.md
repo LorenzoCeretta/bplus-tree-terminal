@@ -37,7 +37,6 @@ The implementation has three main classes:
 
    - Handle simple inserts when there's space
    - Handle cases where we need to split nodes to balance the tree
-   - Handle cases where we need to redistribute keys between nodes (optional)
 
 3. Deletion
    - Handle simple deletes
@@ -66,3 +65,4 @@ The implementation has three main classes:
 ## 6. Extras
 
 - Build a visual interface to demonstrate terminal interaction and commands
+- Handle cases where we need to redistribute keys between nodes in the insertion method
