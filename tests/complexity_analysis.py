@@ -6,7 +6,7 @@ import math
 
 class BPlusTreeComplexityAnalysis:
     """
-    Classe para analisar e visualizar a complexidade de tempo das operações da árvore B+.
+    Class to analyze and visualize the time complexity of B+ tree operations.
     """
     
     def __init__(self):
@@ -14,19 +14,21 @@ class BPlusTreeComplexityAnalysis:
         
     def measure_operation_time(self, operation_func, data_sizes, tree_order=4):
         """
-        Medir o tempo de execução para diferentes tamanhos de dados.
+        Measure execution time for different data sizes.
         """
         times = []
         
         for size in data_sizes:
+            # Create a fresh tree for each test
             tree = BPlusTree(tree_order)
             
+            # Prepare data if needed
             if operation_func.__name__ == 'test_search':
-                # Inserir dados primeiro para operações de busca
+                # Insert data first for search operations
                 for i in range(size):
                     tree.insert(i, f"value_{i}")
             
-            # Medir tempo de operação
+            # Measure operation time
             start_time = time.time()
             operation_func(tree, size)
             end_time = time.time()
@@ -36,49 +38,49 @@ class BPlusTreeComplexityAnalysis:
         return times
     
     def test_insert(self, tree, size):
-        """Testar operação de inserção"""
+        """Test insertion operation"""
         for i in range(size):
             tree.insert(i, f"value_{i}")
     
     def test_search(self, tree, size):
-        """Testar operação de busca"""
+        """Test search operation"""
         for i in range(size):
             tree.search_value(i)
     
     def test_search_missing(self, tree, size):
-        """Testar busca por chaves inexistentes"""
+        """Test search for non-existent keys"""
         for i in range(size):
-            tree.search_value(size + i)  # Buscar por chaves que não existem
+            tree.search_value(size + i)  # Search for keys that don't exist
     
     def test_range_query(self, tree, size):
-        """Testar operação de consulta de intervalo"""
-        # Inserir dados primeiro
+        """Test range query operation"""
+        # Insert data first
         for i in range(size):
             tree.insert(i, f"value_{i}")
         
-        # Realizar consultas de intervalo
+        # Perform range queries
         for i in range(0, size, max(1, size // 10)):
             end = min(i + size // 10, size)
             tree.range_query(i, end)
     
     def test_delete(self, tree, size):
-        """Testar operação de exclusão"""
-        # Inserir dados primeiro
+        """Test deletion operation"""
+        # Insert data first
         for i in range(size):
             tree.insert(i, f"value_{i}")
         
-        # Excluir metade das chaves
+        # Delete half the keys
         for i in range(0, size, 2):
             tree.delete(i)
     
     def analyze_complexities(self):
         """
-        Analisar e plotar a complexidade de tempo de todas as operações da árvore B+.
+        Analyze and plot the time complexity of all B+ tree operations.
         """
-        # Tamanhos de dados a serem testados (escala logarítmica para melhor visualização)
+        # Data sizes to test (logarithmic scale for better visualization)
         data_sizes = [10, 50, 100, 500, 1000, 2000, 5000]
         
-        # Definir operações a serem testadas
+        # Define operations to test
         operations = {
             'Insert': self.test_insert,
             'Search (existing)': self.test_search,
@@ -87,74 +89,75 @@ class BPlusTreeComplexityAnalysis:
             'Delete': self.test_delete
         }
         
-        # Medir tempos para cada operação
+        # Measure times for each operation
         for op_name, op_func in operations.items():
+            print(f"Measuring {op_name}...")
             times = self.measure_operation_time(op_func, data_sizes)
             self.results[op_name] = {'sizes': data_sizes, 'times': times}
         
-        # Criar o gráfico de análise de complexidade
+        # Create the complexity analysis plot
         self.plot_complexity_analysis()
         
-        # Criar comparação teórica vs. real
+        # Create theoretical vs actual comparison
         self.plot_theoretical_vs_actual()
     
     def plot_complexity_analysis(self):
         """
-        Plotar a análise de complexidade de tempo para todas as operações.
+        Plot the time complexity analysis for all operations.
         """
         plt.figure(figsize=(15, 10))
         
-        # Criar subplots para diferentes operações
+        # Create subplots for different operations
         fig, axes = plt.subplots(2, 3, figsize=(18, 12))
         axes = axes.flatten()
         
-        # Esquema de cores para operações
+        # Color scheme for operations
         colors = ['blue', 'green', 'red', 'orange', 'purple']
         
         for i, (op_name, data) in enumerate(self.results.items()):
             ax = axes[i]
             
-            # Plotar medições reais
+            # Plot actual measurements
             ax.plot(data['sizes'], data['times'], 'o-', color=colors[i], 
-            label=f'{op_name} (Actual)', linewidth=2, markersize=6)
+                   label=f'{op_name} (Actual)', linewidth=2, markersize=6)
             
-            # Adicionar curvas de complexidade teórica
+            # Add theoretical complexity curves
             sizes = np.array(data['sizes'])
             
             if op_name == 'Insert':
-                # O(log n) para inserção
+                # O(log n) for insertion
                 theoretical = np.log(sizes) * (data['times'][-1] / np.log(sizes[-1]))
                 ax.plot(sizes, theoretical, '--', color='gray', 
-                label='O(log n)', alpha=0.7)
+                       label='O(log n)', alpha=0.7)
                 
             elif op_name in ['Search (existing)', 'Search (missing)']:
-                # O(log n) para busca
+                # O(log n) for search
                 theoretical = np.log(sizes) * (data['times'][-1] / np.log(sizes[-1]))
                 ax.plot(sizes, theoretical, '--', color='gray', 
-                label='O(log n)', alpha=0.7)
+                       label='O(log n)', alpha=0.7)
                 
             elif op_name == 'Range Query':
-                # O(log n + k) onde k é o tamanho do intervalo
-                # Para este teste, k é proporcional a n, então O(n)
+                # O(log n + k) where k is the range size
+                # For this test, k is proportional to n, so O(n)
                 theoretical = sizes * (data['times'][-1] / sizes[-1])
                 ax.plot(sizes, theoretical, '--', color='gray', 
-                label='O(n)', alpha=0.7)
+                       label='O(n)', alpha=0.7)
                 
             elif op_name == 'Delete':
-                # O(log n) para exclusão
+                # O(log n) for deletion
                 theoretical = np.log(sizes) * (data['times'][-1] / np.log(sizes[-1]))
                 ax.plot(sizes, theoretical, '--', color='gray', 
-                label='O(log n)', alpha=0.7)
+                       label='O(log n)', alpha=0.7)
             
-            ax.set_xlabel('Tamanho de Dados (n)')
-            ax.set_ylabel('Tempo (segundos)')
-            ax.set_title(f'{op_name} - Complexidade de Tempo')
+            ax.set_xlabel('Data Size (n)')
+            ax.set_ylabel('Time (seconds)')
+            ax.set_title(f'{op_name} - Time Complexity')
             ax.legend()
             ax.grid(True, alpha=0.3)
             ax.set_xscale('log')
             ax.set_yscale('log')
         
-        # Remover o último subplot não utilizado
+        # Remove the last unused subplot
         axes[-1].set_visible(False)
         
         plt.tight_layout()
@@ -163,11 +166,11 @@ class BPlusTreeComplexityAnalysis:
     
     def plot_theoretical_vs_actual(self):
         """
-        Criar uma comparação abrangente de complexidades teóricas vs. reais.
+        Create a comprehensive comparison of theoretical vs actual complexities.
         """
         plt.figure(figsize=(16, 12))
         
-        # Definir complexidades teóricas
+        # Define theoretical complexities
         theoretical_complexities = {
             'Insert': 'O(log n)',
             'Search (existing)': 'O(log n)',
@@ -176,10 +179,10 @@ class BPlusTreeComplexityAnalysis:
             'Delete': 'O(log n)'
         }
         
-        # Criar uma tabela de resumo
+        # Create a summary table
         fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(16, 12))
         
-        # Plot 1: Todas as operações no mesmo gráfico
+        # Plot 1: All operations on same graph
         colors = ['blue', 'green', 'red', 'orange', 'purple']
         
         for i, (op_name, data) in enumerate(self.results.items()):
@@ -187,36 +190,39 @@ class BPlusTreeComplexityAnalysis:
                     label=f'{op_name} ({theoretical_complexities[op_name]})', 
                     linewidth=2, markersize=6)
         
-        ax1.set_xlabel('Tamanho de Dados (n)')
-        ax1.set_ylabel('Tempo (segundos)')
-        ax1.set_title('Operações da Árvore B+ - Comparação de Complexidade de Tempo')
+        ax1.set_xlabel('Data Size (n)')
+        ax1.set_ylabel('Time (seconds)')
+        ax1.set_title('B+ Tree Operations - Time Complexity Comparison')
         ax1.legend()
         ax1.grid(True, alpha=0.3)
         ax1.set_xscale('log')
         ax1.set_yscale('log')
         
-        # Plot 2: Tabela de resumo de complexidades
+        # Plot 2: Complexity summary table
+        ax2.axis('off')
+        
+        # Create table data
         table_data = []
         for op_name in self.results.keys():
             table_data.append([
                 op_name,
                 theoretical_complexities[op_name],
-                'O(1)' if op_name == 'Busca (existente)' else 'O(log n)',
-                'O(n)' if op_name == 'Consulta de intervalo' else 'O(log n)',
-                'O(log n)' if op_name != 'Consulta de intervalo' else 'O(n)'
+                'O(1)' if op_name == 'Search (existing)' else 'O(log n)',
+                'O(n)' if op_name == 'Range Query' else 'O(log n)',
+                'O(log n)' if op_name != 'Range Query' else 'O(n)'
             ])
         
-        # Criar tabela
+        # Create table
         table = ax2.table(cellText=table_data,
-        colLabels=['Operação', 'Caso Médio', 'Melhor Caso', 'Pior Caso', 'Espaço'],
-        cellLoc='center',
-        loc='center')
+                         colLabels=['Operation', 'Average Case', 'Best Case', 'Worst Case', 'Space'],
+                         cellLoc='center',
+                         loc='center')
         
         table.auto_set_font_size(False)
         table.set_fontsize(12)
         table.scale(1.2, 2)
         
-        # Estilizar a tabela
+        # Style the table
         for i in range(len(table_data) + 1):
             for j in range(5):
                 if i == 0:  # Header row
@@ -225,7 +231,7 @@ class BPlusTreeComplexityAnalysis:
                 else:
                     table[(i, j)].set_facecolor('#f0f0f0' if i % 2 == 0 else 'white')
         
-        ax2.set_title('Resumo de Complexidade da Árvore B+', fontsize=16, fontweight='bold', pad=20)
+        ax2.set_title('B+ Tree Complexity Summary', fontsize=16, fontweight='bold', pad=20)
         
         plt.tight_layout()
         plt.savefig('bplus_tree_complexity_summary.png', dpi=300, bbox_inches='tight')
@@ -233,62 +239,77 @@ class BPlusTreeComplexityAnalysis:
     
     def print_complexity_summary(self):
         """
-        Imprimir um resumo detalhado de complexidades.
+        Print a detailed complexity summary.
         """
         print("\n" + "="*80)
-        print("RESUMO DA ANÁLISE DE COMPLEXIDADE DA ÁRVORE B+")
+        print("B+ TREE COMPLEXITY ANALYSIS SUMMARY")
         print("="*80)
         
-        print("\nCOMPLEXIDADES DAS OPERAÇÕES:")
+        print("\nOPERATION COMPLEXITIES:")
         print("-" * 50)
         
         complexities = {
             'Insert': {
-                'Caso médio': 'O(log n)',
-                'Melhor Caso': 'O(1)',
-                'Pior Caso': 'O(log n)',
-                'Espaço': 'O(log n)',
-                'Descrição': 'Inserção requer encontrar a folha correta e potencialmente dividir nós'
+                'average': 'O(log n)',
+                'best': 'O(1)',
+                'worst': 'O(log n)',
+                'space': 'O(log n)',
+                'description': 'Insertion requires finding the correct leaf and potentially splitting nodes'
             },
             'Search': {
-                'Caso médio': 'O(log n)',
-                'Melhor Caso': 'O(1)',
-                'Pior Caso': 'O(log n)',
-                'Espaço': 'O(1)',
-                'Descrição': 'Busca navega desde a raiz até a folha usando chaves de nós internos'
+                'average': 'O(log n)',
+                'best': 'O(1)',
+                'worst': 'O(log n)',
+                'space': 'O(1)',
+                'description': 'Search navigates from root to leaf using internal node keys'
             },
             'Delete': {
-                'Caso médio': 'O(log n)',
-                'Melhor Caso': 'O(1)',
-                'Pior Caso': 'O(log n)',
-                'Espaço': 'O(log n)',
-                'Descrição': 'Exclusão pode exigir emprestar de irmãos ou mesclar nós'
+                'average': 'O(log n)',
+                'best': 'O(1)',
+                'worst': 'O(log n)',
+                'space': 'O(log n)',
+                'description': 'Deletion may require borrowing from siblings or merging nodes'
             },
             'Range Query': {
-                'Caso médio': 'O(log n + k)',
-                'Melhor Caso': 'O(log n)',
-                'Pior Caso': 'O(n)',
-                'Espaço': 'O(k)',
-                'Descrição': 'Usa estrutura de folha duplamente ligada para travessia eficiente de intervalo'
+                'average': 'O(log n + k)',
+                'best': 'O(log n)',
+                'worst': 'O(n)',
+                'space': 'O(k)',
+                'description': 'Uses doubly-linked leaf structure for efficient range traversal'
             }
         }
         
         for op, details in complexities.items():
             print(f"\n{op.upper()}:")
-            print(f"  Caso médio: {details['Caso médio']}")
-            print(f"  Melhor Caso:    {details['Melhor Caso']}")
-            print(f"  Pior Caso:   {details['Pior Caso']}")
-            print(f"  Espaço:        {details['Espaço']}")
-            print(f"  Descrição:  {details['Descrição']}")
+            print(f"  Average Case: {details['average']}")
+            print(f"  Best Case:    {details['best']}")
+            print(f"  Worst Case:   {details['worst']}")
+            print(f"  Space:        {details['space']}")
+            print(f"  Description:  {details['description']}")
+        
+        print("\n" + "="*80)
+        print("KEY CHARACTERISTICS:")
+        print("-" * 30)
+        print("• All leaf nodes are at the same level (balanced tree)")
+        print("• Internal nodes only store keys for navigation")
+        print("• Leaf nodes store actual data and are linked together")
+        print("• Tree order 'm' determines maximum children per node")
+        print("• Height is always O(log n) due to balanced structure")
+        print("• Range queries are efficient due to leaf node linking")
+        print("="*80)
 
 
 def run_complexity_analysis():
     """
-    Função principal para executar a análise de complexidade.
+    Main function to run the complexity analysis.
     """
+    print("Starting B+ Tree Complexity Analysis...")
+    
     analyzer = BPlusTreeComplexityAnalysis()
     analyzer.analyze_complexities()
     analyzer.print_complexity_summary()
+    
+    print("\nAnalysis complete! Check the generated PNG files for visualizations.")
 
 
 if __name__ == "__main__":
