@@ -38,6 +38,10 @@ class BPlusTreeShell(App):
             output = self.vfs.ls(params[0] if params else None)
         elif op == "cd" and params:
             output = self.vfs.cd(params[0])
+        elif op == "touch" and params:
+            output = self.vfs.touch(params[0])
+        elif op == "rm" and params:
+            output = self.vfs.rm(params[0])
         elif op == "exit":
             await self.action_quit()
             return

@@ -47,3 +47,18 @@ class VirtualFileSystem:
         if self.cwd == "/":
             return "/" + name.rstrip("/")
         return self.cwd.rstrip("/") + "/" + name.rstrip("/")
+
+    def touch(self, name):
+        path = self.__full__path(name)
+        if self.tree.search_value(path):
+            return f"File '{name}' already exists"
+        self.tree.insert(path, {"type": "file"})
+        return f"File '{name}' created"
+
+    def rm(self, name):
+        path = self.__full__path(name)
+        if self.tree.search_value(path):
+            self.tree.delete(path)
+            return f"File '{name}' deleted"
+        else:
+            return f"File '{name}' does not exist"
