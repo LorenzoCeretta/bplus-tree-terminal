@@ -14,7 +14,7 @@ class BPlusTreeShell(App):
         yield Static("B+ Tree Virtual Filesystem", id="header")
         yield Static("", id="output", expand=True)
         yield Input(placeholder="Digite um comando...", id="input")
-        yield Static(f"CWD: /", id="cwd")
+        yield Static(f"fakerational:/$", id="cwd")
 
     def on_mount(self):
         self.vfs = VirtualFileSystem()
@@ -24,7 +24,7 @@ class BPlusTreeShell(App):
         self.prompt()
 
     def prompt(self, text=""):
-        self.output.update(f"{self.vfs.cwd}$ {text}")
+        self.output.update(f"fakerational:{self.vfs.cwd}$ {text}")
 
     async def on_input_submitted(self, event: Input.Submitted):
         cmd = event.value.strip()
@@ -41,8 +41,6 @@ class BPlusTreeShell(App):
             output = self.vfs.ls(params[0] if params else None)
         elif op == "cd":
             output = self.vfs.cd(params[0] if params else None)
-        elif op == "cd" and params:
-            output = self.vfs.cd(params[0])
         elif op == "touch" and params:
             output = self.vfs.touch(params[0])
         elif op == "rm" and params:
@@ -54,8 +52,8 @@ class BPlusTreeShell(App):
             output = f"Unknown or incomplete command: {cmd}"
 
         # Update the output and cwd
-        self.output.update(f"{self.vfs.cwd}$ {cmd}\n{output}")
-        self.cwd_label.update(f"CWD: {self.vfs.cwd}")
+        self.output.update(f"fakerational:{self.vfs.cwd}$ {cmd}\n{output}")
+        self.cwd_label.update(f"fakerational:{self.vfs.cwd}$")
         self.input.value = ""
 
 
