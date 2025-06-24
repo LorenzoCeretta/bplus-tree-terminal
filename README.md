@@ -148,6 +148,6 @@ The `filesystem_visualization/` folder contains tools to visualize the filesyste
 python3 -m filesystem_visualization.filesystem_visualization
 ```
 
-This creates a sample Game of Thrones themed filesystem and generates a tree visualization:
+This creates an example filesystem and generates a tree visualization:
 
 <img src="filesystem_visualization/filesystem_tree.png" width="500">
