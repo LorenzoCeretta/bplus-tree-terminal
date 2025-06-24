@@ -22,9 +22,20 @@ This project includes comprehensive complexity analysis tools to visualize and u
 
 1. Create and activate a virtual environment:
 
+For MacOS/Linux:
+
 ```bash
-python -m venv venv
+python3 -m venv venv
+
 source venv/bin/activate
+```
+
+For Windows:
+
+```cmd
+python -m venv venv
+
+.\venv\Scripts\activate
 ```
 
 2. Install required dependencies:
@@ -38,7 +49,7 @@ pip install -r requirements.txt
 ### Option 1: Run from Command Line
 
 ```bash
-python run_complexity_analysis.py
+python3 run_complexity_analysis.py
 ```
 
 ### Option 2: Use Jupyter Notebook
