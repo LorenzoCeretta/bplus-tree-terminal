@@ -39,6 +39,8 @@ class BPlusTreeShell(App):
             output = self.vfs.mkdir(params[0])
         elif op == "ls":
             output = self.vfs.ls(params[0] if params else None)
+        elif op == "cd":
+            output = self.vfs.cd(params[0] if params else None)
         elif op == "cd" and params:
             output = self.vfs.cd(params[0])
         elif op == "touch" and params:

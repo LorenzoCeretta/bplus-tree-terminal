@@ -1,5 +1,6 @@
 from bplus_tree import BPlusTree
 
+
 class VirtualFileSystem:
     def __init__(self, order=4):
         self.tree = BPlusTree(order)
@@ -24,7 +25,11 @@ class VirtualFileSystem:
             return " ".join(node.keys) if node.keys else "[empty]"
         return "[unknown node]"
 
-    def cd(self, path):
+    def cd(self, path=None):
+        if not path:
+            self.cwd = "/"
+            return "Moved to the root directory"
+
         if path == "..":
             if self.cwd == "/":
                 return "Already at root directory"
@@ -32,7 +37,11 @@ class VirtualFileSystem:
             if not self.cwd:
                 self.cwd = "/"
             return f"Moved to {self.cwd}"
-            
+
+        if path == "/":
+            self.cwd = "/"
+            return "Moved to the root directory"
+
         path = self.__full__path(path)
         val = self.tree.search_value(path)
         if val and val.get("type") == "dir":
