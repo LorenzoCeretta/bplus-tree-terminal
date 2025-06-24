@@ -3,6 +3,9 @@ from textual.containers import Vertical
 from textual.widgets import Input, Static
 from commands import VirtualFileSystem
 
+# To exit the shell interface, just type "exit"
+
+
 class BPlusTreeShell(App):
     CSS_PATH = None  # No custom CSS, minimal
     BINDINGS = [("ctrl+c", "quit", "Quit")]
@@ -48,10 +51,11 @@ class BPlusTreeShell(App):
         else:
             output = f"Unknown or incomplete command: {cmd}"
 
-        # Atualiza o output e cwd
+        # Update the output and cwd
         self.output.update(f"{self.vfs.cwd}$ {cmd}\n{output}")
         self.cwd_label.update(f"CWD: {self.vfs.cwd}")
         self.input.value = ""
+
 
 if __name__ == "__main__":
     BPlusTreeShell().run()
