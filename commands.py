@@ -17,13 +17,29 @@ class VirtualFileSystem:
     def ls(self, path=None):
         if not path:
             path = self.cwd
-        node = self.tree.search(path)
-        if not node:
+
+        path = path.rstrip("/")
+        if not path:
+            path = "/"
+
+        if not self.tree.search_value(path):
             return f"No such directory: {path}"
-        # Shows the keys of the node (for simplicity)
-        if hasattr(node, "keys"):
-            return " ".join(node.keys) if node.keys else "[empty]"
-        return "[unknown node]"
+
+        # Get all paths and filter children
+        contents = []
+        prefix = path if path == "/" else path + "/"
+
+        for key in self.tree.get_all_leaf_keys():
+            if key != path and key.startswith(prefix):
+                name = key.split("/")[-1]
+                if name:
+                    # Check if it's a directory
+                    item_type = self.tree.search_value(key).get("type")
+                    if item_type == "dir":
+                        name = name + "/"
+                    contents.append(name)
+
+        return " ".join(contents) if contents else "[empty]"
 
     def cd(self, path=None):
         if not path:
