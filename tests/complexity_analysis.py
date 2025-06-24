@@ -106,7 +106,6 @@ class BPlusTreeComplexityAnalysis:
         Plot the time complexity analysis for all operations.
         """
         plt.figure(figsize=(15, 10))
-        
         # Create subplots for different operations
         fig, axes = plt.subplots(2, 3, figsize=(18, 12))
         axes = axes.flatten()
