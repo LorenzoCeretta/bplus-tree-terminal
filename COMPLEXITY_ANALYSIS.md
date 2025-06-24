@@ -20,7 +20,14 @@ This project includes comprehensive complexity analysis tools to visualize and u
 
 ## Installation
 
-1. Install required dependencies:
+1. Create and activate a virtual environment:
+
+```bash
+python -m venv venv
+source venv/bin/activate
+```
+
+2. Install required dependencies:
 
 ```bash
 pip install -r requirements.txt
