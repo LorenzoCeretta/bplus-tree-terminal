@@ -1,5 +1,6 @@
 from bplus_tree import BPlusTree
 
+
 class VirtualFileSystem:
     def __init__(self, order=4):
         self.tree = BPlusTree(order)
@@ -16,15 +17,35 @@ class VirtualFileSystem:
     def ls(self, path=None):
         if not path:
             path = self.cwd
-        node = self.tree.search(path)
-        if not node:
-            return f"No such directory: {path}"
-        # Shows the keys of the node (for simplicity)
-        if hasattr(node, "keys"):
-            return " ".join(node.keys) if node.keys else "[empty]"
-        return "[unknown node]"
 
-    def cd(self, path):
+        path = path.rstrip("/")
+        if not path:
+            path = "/"
+
+        if not self.tree.search_value(path):
+            return f"No such directory: {path}"
+
+        # Get all paths and filter children
+        contents = []
+        prefix = path if path == "/" else path + "/"
+
+        for key in self.tree.get_all_leaf_keys():
+            if key != path and key.startswith(prefix):
+                name = key.split("/")[-1]
+                if name:
+                    # Check if it's a directory
+                    item_type = self.tree.search_value(key).get("type")
+                    if item_type == "dir":
+                        name = name + "/"
+                    contents.append(name)
+
+        return " ".join(contents) if contents else "[empty]"
+
+    def cd(self, path=None):
+        if not path:
+            self.cwd = "/"
+            return "Moved to the root directory"
+
         if path == "..":
             if self.cwd == "/":
                 return "Already at root directory"
@@ -32,7 +53,11 @@ class VirtualFileSystem:
             if not self.cwd:
                 self.cwd = "/"
             return f"Moved to {self.cwd}"
-            
+
+        if path == "/":
+            self.cwd = "/"
+            return "Moved to the root directory"
+
         path = self.__full__path(path)
         val = self.tree.search_value(path)
         if val and val.get("type") == "dir":

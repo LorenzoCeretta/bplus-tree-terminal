@@ -20,7 +20,25 @@ This project includes comprehensive complexity analysis tools to visualize and u
 
 ## Installation
 
-1. Install required dependencies:
+1. Create and activate a virtual environment:
+
+For MacOS/Linux:
+
+```bash
+python3 -m venv venv
+
+source venv/bin/activate
+```
+
+For Windows:
+
+```cmd
+python -m venv venv
+
+.\venv\Scripts\activate
+```
+
+2. Install required dependencies:
 
 ```bash
 pip install -r requirements.txt
@@ -31,10 +49,10 @@ pip install -r requirements.txt
 ### Option 1: Run from Command Line
 
 ```bash
-python run_complexity_analysis.py
+python3 -m analysis.run_complexity_analysis
 ```
 
-### Option 2: Use Jupyter Notebook
+### Option 2: Use Jupyter Notebook (Currently not working)
 
 ```bash
 jupyter notebook complexity_analysis.ipynb
@@ -43,7 +61,7 @@ jupyter notebook complexity_analysis.ipynb
 ### Option 3: Import and Use in Your Code
 
 ```python
-from tests.complexity_analysis import BPlusTreeComplexityAnalysis
+from analysis.complexity_analysis import BPlusTreeComplexityAnalysis
 
 analyzer = BPlusTreeComplexityAnalysis()
 analyzer.analyze_complexities()
@@ -61,8 +79,8 @@ The analysis generates:
 
 ## Generated Files
 
-- `bplus_tree_complexity_analysis.png`: Individual operation complexity plots
-- `bplus_tree_complexity_summary.png`: Comprehensive comparison and summary table
+- `analysis/bplus_tree_complexity_analysis.png`: Individual operation complexity plots
+- `analysis/bplus_tree_complexity_summary.png`: Comprehensive comparison and summary table
 
 ## Understanding the Results
 

@@ -10,10 +10,11 @@ import sys
 import os
 
 # Add the current directory to the path so we can import bplus_tree
-sys.path.append('.')
+sys.path.append(".")
 
 try:
-    from tests.complexity_analysis import run_complexity_analysis
+    from .complexity_analysis import run_complexity_analysis
+
     print("Starting B+ Tree Complexity Analysis...")
     run_complexity_analysis()
 except ImportError as e:
@@ -23,4 +24,4 @@ except ImportError as e:
     sys.exit(1)
 except Exception as e:
     print(f"Error running analysis: {e}")
-    sys.exit(1) 
+    sys.exit(1)
