@@ -23,16 +23,6 @@ def create_sample_filesystem():
     vfs.touch("jaime.txt")
     vfs.touch("tyrion.txt")
 
-    vfs.cd("/houses")
-    vfs.mkdir("targaryen")
-    vfs.cd("targaryen")
-    vfs.touch("daenerys.txt")
-    vfs.touch("viserys.txt")
-    vfs.mkdir("dragons")
-    vfs.cd("dragons")
-    vfs.touch("drogon.txt")
-    vfs.touch("rhaegal.txt")
-    vfs.touch("viserion.txt")
 
     vfs.cd("/")
     print("Filesystem ready")
